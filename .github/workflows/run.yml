@@ -2,28 +2,30 @@ name: Run Pastrator Bot 24/7
 
 on:
   push:
-    branches: [ main ]
-  schedule:
-    - cron: '0 */5 * * *' # Wuxuu dib u bilowbaa 5-dii saacba si uusan u damin
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/python-setup@v4
         with:
           python-version: '3.10'
 
       - name: Install Dependencies
         run: |
-          pip install pyTelegramBotAPI google-generativeai python-dotenv
+          python -m pip install --upgrade pip
+          pip install pyTelegramBotAPI python-dotenv groq
 
       - name: Run Bot
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: python main.py
