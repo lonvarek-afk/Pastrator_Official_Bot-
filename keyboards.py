@@ -7,7 +7,6 @@ def main_keyboard():
     btn3 = KeyboardButton("History")
     btn4 = KeyboardButton("Introduction")
     
-    # 2 Midig jira iyo 2 Bidix jira (Grid 2x2)
     markup.add(btn1, btn2)
     markup.add(btn3, btn4)
     return markup
