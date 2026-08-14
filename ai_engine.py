@@ -1,18 +1,29 @@
 import os
-import google.generativeai as genai
+from groq import Groq
 
-api_key = os.getenv("GEMINI_API_KEY")
-if api_key:
-    genai.configure(api_key=api_key)
-
-# Waxaan isticmaaleynaa gemini-1.5-flash oo aad u dhakhso badan
-model = genai.GenerativeModel('gemini-1.5-flash')
+api_key = os.getenv("GROQ_API_KEY")
+client = Groq(api_key=api_key) if api_key else None
 
 def generate_ai_response(prompt, user_name="User"):
-    try:
-        system_instruction = f"You are Pastrator, an advanced AI assistant created for Telegram. The user's name is {user_name}. Respond professionally, clearly, and concisely without using any emojis in your response."
+    if not client:
+        return "System error: Groq API Key is missing."
         
-        response = model.generate_content(f"{system_instruction}\n\nUser: {prompt}")
-        return response.text
+    try:
+        system_instruction = (
+            f"You are Pastrator, an advanced AI assistant built for Telegram. "
+            f"The user's name is {user_name}. Respond professionally, clearly, "
+            f"and accurately. Do not use any emojis in your response under any circumstances."
+        )
+        
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1024
+        )
+        return completion.choices[0].message.content
     except Exception as e:
-        return "System error encountered. Please try again in a moment."
+        return f"Error: {str(e)}"
